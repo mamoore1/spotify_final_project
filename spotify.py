@@ -127,24 +127,37 @@ def playlist_track_generator(playlist_id):
     A generator function which takes.
     
     :param:: string: playlist id
-    :yield:: dictionary: track information
+    :yield:: list: track name, dictionary of track information
     """
     # For test purposes, we use a predetermined playlist id
     # playlist_id = "2ORMMekJes4b8Zi27Ae1T7"
-    
+
+    playlist_name = sp.playlist(playlist_id, fields="name")['name']
+
     # Access playlist_tracks. Relevant fields are artist name, track name, track id
     tracks = sp.playlist_tracks(playlist_id, fields='items.track.artists.name,items.track.name,items.track.id')["items"]
-    
-    # Yield the tracks and their information
+
+
+    # Reformat the returned track data into a list that is less horrifying
+    formatted_tracks = []
     for track in tracks:
-        yield track['track']
+        track = track['track']
+        track_artist = [artist['name'] for artist in track['artists']]
+        track_name = track['name']
+        track_id = track['id']
+        track_data = {"id": track_id, "artist": track_artist, "title": track_name}
+        formatted_tracks.append(track_data)
 
 
-def sort_tracks_by_feature(generator, playlist_id, feature="danceability", length=None):
+    # Yield the tracks and their information
+    return [playlist_name, formatted_tracks]
+
+
+def sort_tracks_by_feature(track_list, playlist_id, feature="danceability", length=None):
     """
     Takes in the get_audio_features generator function and a feature by which to sort the list. Returns a list of track ids, ordered by the feature.
     
-    :param:: generator: function, yields track information
+    :param:: list: holds track information
     :param:: feature: string, a feature of a track's audio information
     :param:: length: optional integer, the length of the playlist
     :return:: list of tuples containing track id, feature, track name and track artists(s)
@@ -154,9 +167,9 @@ def sort_tracks_by_feature(generator, playlist_id, feature="danceability", lengt
     playlist = []
     
     # Iterate through the tracks in the generator and access the track ids
-    for track in generator(playlist_id):
-        track_artist = [artist['name'] for artist in track['artists']]
-        track_name = track['name']
+    for track in track_list:
+        track_artist = track['artist']
+        track_name = track['title']
         track_id = track['id']
         
         # Pass the track id to the get_audio_features function and access the relevant feature
@@ -177,5 +190,7 @@ def sort_tracks_by_feature(generator, playlist_id, feature="danceability", lengt
     
     return sorted_playlist
 
+#main()
 
-main()
+playlist_track_generator("https://open.spotify.com/playlist/2HMsnc14iYiROpXR7AfTPJ")
+

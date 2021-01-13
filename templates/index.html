@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Spotify Playlist Creator
+{% endblock%}
+
+{% block main %}
+    <form action="/tracks" method="get">
+        <input name="playlist_url" placeholder="Url of playlist" type="url">
+    </form>
+{% endblock %}

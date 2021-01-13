@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Spotify Playlist Creator
+{% endblock%}
+
+{% block main %}
+    {% for track in tracks %}
+        <p>{{ track.artist }} - {{ track.title }}</p>
+    {% endfor %}
+    <form action="/" method="post">
+        <select name="feature" placeholder="Select a feature">
+            {% for feature in features %}
+                <option value="{{ feature }}">{{ feature }}</option>
+            {% endfor %}
+        </select>
+        <label for="length">Playlist length. Set to zero if you don't want the playlist shortened.</label>
+        <input name="length" id="length" value="0" type="number" min="0" max="30">
+    </form>
+{% endblock %}
